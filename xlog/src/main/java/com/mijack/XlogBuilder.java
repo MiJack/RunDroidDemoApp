@@ -41,7 +41,7 @@ public class XlogBuilder {
         sb.append(",").append(String.format(KEY_TO_VALUE, "processName", XlogUtils.getProcessName()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "threadName", XlogUtils.getCurrentThreadInfo()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "pid", pid));
-        XlogUtils.appendInvokeLine(sb);
+        XlogUtils.appendInvokeLine(hookId,sb);
         if (hookId > 0) {
             sb.append(",").append(String.format(KEY_TO_VALUE, "hookId", hookId));
         }
@@ -76,7 +76,7 @@ public class XlogBuilder {
         sb.append(",").append(String.format(KEY_TO_VALUE, "processName", XlogUtils.getProcessName()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "threadName", XlogUtils.getCurrentThreadInfo()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "pid", pid));
-        XlogUtils.appendInvokeLine(sb);
+        XlogUtils.appendInvokeLine(hookId, sb);
         if (hookId > 0) {
             sb.append(",").append(String.format(KEY_TO_VALUE, "hookId", hookId));
         }

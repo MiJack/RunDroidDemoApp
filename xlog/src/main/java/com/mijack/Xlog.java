@@ -59,7 +59,7 @@ public class Xlog {
      * @see #logMethodExitWithResult(String, Object, Object)
      */
     @Deprecated
-    public static void logMethodExit(String methodSign, Object instance) {
+    public static void logMethodExit(String methodSign, Object instance,Object... params) {
         XlogBuilder.logMethodExitInfo(-1, MethodType.USER_NOT_STATIC_METHOD, methodSign, instance, XlogBuilder.MethodExecuteResultType.NO_THING, null, null);
     }
 

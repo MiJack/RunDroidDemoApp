@@ -29,7 +29,7 @@ import static com.mijack.XlogBuilder.KEY_TO_VALUE2;
 public class XlogUtils {
 
     private static String processName;
-    private static final int INDEX_STACK_TRACE_ELEMENT = 3;
+    private static final int INDEX_STACK_TRACE_ELEMENT = 4;
     public static final char LINE_SPLIT_CHAR = '\t';
 
     public static final char PARAMS_SPLIT_CHAR = '\t';
@@ -259,17 +259,18 @@ public class XlogUtils {
         return System.nanoTime();
     }
 
-    public static void appendInvokeLine(StringBuilder sb) {
+    public static void appendInvokeLine(int hookId, StringBuilder sb) {
         // user method -> log facade -> log builder -> xlog utils
         Exception exception = new Exception();
-        exception.printStackTrace();
         StackTraceElement[] stackTrace = exception.getStackTrace();
         int lineNo = -1;
         String className = "null";
-        if (stackTrace != null && stackTrace.length > INDEX_STACK_TRACE_ELEMENT) {
-            StackTraceElement stackTraceElement = stackTrace[INDEX_STACK_TRACE_ELEMENT];
-            lineNo = stackTraceElement.getLineNumber();
-            className = stackTraceElement.getClassName();
+        if (hookId < 0) {
+            if (stackTrace != null && stackTrace.length > INDEX_STACK_TRACE_ELEMENT) {
+                StackTraceElement stackTraceElement = stackTrace[INDEX_STACK_TRACE_ELEMENT];
+                lineNo = stackTraceElement.getLineNumber();
+                className = stackTraceElement.getClassName();
+            }
         }
         sb.append(",").append(String.format(KEY_TO_VALUE, "lineNo", lineNo));
         sb.append(",").append(String.format(KEY_TO_VALUE, "className", className));
