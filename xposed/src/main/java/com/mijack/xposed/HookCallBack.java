@@ -1,21 +1,8 @@
 package com.mijack.xposed;
 
-import android.os.Process;
-
 import com.mijack.Xlog;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
 
 import static com.mijack.XlogUtils.method2String;
 
@@ -37,24 +24,23 @@ public class HookCallBack extends XC_MethodHook {
     protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
         super.beforeHookedMethod(param);
         if (!isStatic) {
-            Xlog.logMethodEnter(System.identityHashCode(param),method2String(param.method), param.thisObject, param.args);
+            Xlog.logSystemMethodEnter(System.identityHashCode(param), method2String(param.method), param.thisObject, param.args);
         } else {
-            Xlog.logStaticMethodEnter(System.identityHashCode(param),method2String(param.method), param.args);
+            Xlog.logSystemStaticMethodEnter(System.identityHashCode(param), method2String(param.method), param.args);
         }
     }
 
     @Override
     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-//        super.afterHookedMethod(param);
         boolean hasThrowable = param.hasThrowable();
         if (isStatic && hasThrowable) {
-            Xlog.logStaticMethodExitWithThrowable(System.identityHashCode(param),method2String(param.method), param.getThrowable());
+            Xlog.logSystemStaticMethodExitWithThrowable(System.identityHashCode(param), method2String(param.method), param.getThrowable());
         } else if (isStatic && !hasThrowable) {
-            Xlog.logStaticMethodExitWithResult(System.identityHashCode(param),method2String(param.method),param.getResult());
+            Xlog.logSystemStaticMethodExitWithResult(System.identityHashCode(param), method2String(param.method), param.getResult());
         } else if (!isStatic && hasThrowable) {
-            Xlog.logMethodExitWithThrowable(System.identityHashCode(param),method2String(param.method), param.thisObject, param.getThrowable());
+            Xlog.logSystemMethodExitWithThrowable(System.identityHashCode(param), method2String(param.method), param.thisObject, param.getThrowable());
         } else {
-            Xlog.logMethodExitWithResult(System.identityHashCode(param),method2String(param.method), param.thisObject,param.getResult());
+            Xlog.logSystemMethodExitWithResult(System.identityHashCode(param), method2String(param.method), param.thisObject, param.getResult());
         }
     }
 

@@ -3,7 +3,6 @@ package com.mijack;
 import android.content.ComponentName;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Parcel;
 import android.os.RemoteException;
 import android.os.Process;
 import android.text.TextUtils;
@@ -20,15 +19,17 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 
-import static com.mijack.Xlog.KEY_TO_VALUE;
-import static com.mijack.Xlog.KEY_TO_VALUE2;
+import static com.mijack.XlogBuilder.KEY_TO_VALUE;
+import static com.mijack.XlogBuilder.KEY_TO_VALUE2;
 
 /**
- * Created by Mr.Yuan on 2017/4/1.
+ * @author Mr.Yuan
+ * @since 2017/4/1
  */
 public class XlogUtils {
+
     private static String processName;
-    public static final ThreadLocal<String> THREAD_INFO_LOCAL = new ThreadLocal<>();
+    private static final int INDEX_STACK_TRACE_ELEMENT = 3;
     public static final char LINE_SPLIT_CHAR = '\t';
 
     public static final char PARAMS_SPLIT_CHAR = '\t';
@@ -69,7 +70,7 @@ public class XlogUtils {
                 .append(",").append(String.format(KEY_TO_VALUE, "hashcode", System.identityHashCode(o)));
         if (o instanceof Member) {
             Member member = (Member) o;
-            sb.append(",").append(String.format(KEY_TO_VALUE, "method",method2String(member)));
+            sb.append(",").append(String.format(KEY_TO_VALUE, "method", method2String(member)));
         } else if (o instanceof String) {
             sb.append(",").append(String.format(KEY_TO_VALUE, "string", o.toString()));
         } else if (o instanceof Throwable) {
@@ -121,11 +122,13 @@ public class XlogUtils {
     }
 
     public static String getCurrentThreadInfo() {
-        if (THREAD_INFO_LOCAL.get() == null) {
-            Thread currentThread = Thread.currentThread();
-            THREAD_INFO_LOCAL.set(currentThread.getName() + "(" + System.identityHashCode(currentThread) + ")");
-        }
-        return THREAD_INFO_LOCAL.get();
+        Thread currentThread = Thread.currentThread();
+        return currentThread.getName();
+    }
+
+    public static int getCurrentThreadId() {
+        Thread currentThread = Thread.currentThread();
+        return System.identityHashCode(currentThread);
     }
 
     public static String getProcessName() {
@@ -254,5 +257,22 @@ public class XlogUtils {
 
     public static long currentTime() {
         return System.nanoTime();
+    }
+
+    public static void appendInvokeLine(StringBuilder sb) {
+        // user method -> log facade -> log builder -> xlog utils
+        Exception exception = new Exception();
+        exception.printStackTrace();
+        StackTraceElement[] stackTrace = exception.getStackTrace();
+        int lineNo = -1;
+        String className = "null";
+        if (stackTrace != null && stackTrace.length > INDEX_STACK_TRACE_ELEMENT) {
+            StackTraceElement stackTraceElement = stackTrace[INDEX_STACK_TRACE_ELEMENT];
+            lineNo = stackTraceElement.getLineNumber();
+            className = stackTraceElement.getClassName();
+        }
+        sb.append(",").append(String.format(KEY_TO_VALUE, "lineNo", lineNo));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "className", className));
+
     }
 }
