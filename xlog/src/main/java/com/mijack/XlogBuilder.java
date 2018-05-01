@@ -30,6 +30,30 @@ public class XlogBuilder {
         NO_THING, HAS_RESULT, HAS_THROWABLE
     }
 
+    public static void logMethodEnterInfo(int hookId, MethodType methodType, String methodSign, Object instance, Object... args) {
+        int pid = XlogUtils.getProcessId();
+        int threadId = XlogUtils.getCurrentThreadId();
+
+        StringBuilder sb = new StringBuilder("{").append(String.format(KEY_TO_VALUE, "logType", LOG_TYPE_ENTER));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "time", XlogUtils.currentTime()));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "processName", XlogUtils.getProcessName()));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "threadName", XlogUtils.getCurrentThreadInfo()));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "pid", pid));
+        if (hookId > 0) {
+            sb.append(",").append(String.format(KEY_TO_VALUE, "hookId", hookId));
+        }
+        XlogUtils.appendInvokeLine(hookId, sb);
+        sb.append(",").append(String.format(KEY_TO_VALUE, "methodType", methodType.typename()));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "methodSign", methodSign));
+//判断是否是方法开始
+        if (methodType.hasInstance()) {
+            sb.append(",").append(String.format(KEY_TO_VALUE2, "instance", XlogUtils.object2String(instance)));
+        }
+        sb.append(",").append(XlogUtils.paramsToString(args));
+        sb.append("}");
+        LogWriter.d(hookId, pid, threadId, sb.toString());
+    }
+
     public static void logMethodExitInfo(int hookId, MethodType methodType, String methodSign,
                                          Object instance, MethodExecuteResultType resultType, Object result, Throwable throwable) {
 
@@ -41,7 +65,7 @@ public class XlogBuilder {
         sb.append(",").append(String.format(KEY_TO_VALUE, "processName", XlogUtils.getProcessName()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "threadName", XlogUtils.getCurrentThreadInfo()));
         sb.append(",").append(String.format(KEY_TO_VALUE, "pid", pid));
-        XlogUtils.appendInvokeLine(hookId,sb);
+        XlogUtils.appendInvokeLine(hookId, sb);
         if (hookId > 0) {
             sb.append(",").append(String.format(KEY_TO_VALUE, "hookId", hookId));
         }
@@ -63,30 +87,6 @@ public class XlogBuilder {
                 // do nothing
                 break;
         }
-        sb.append("}");
-        LogWriter.d(hookId, pid, threadId, sb.toString());
-    }
-
-    public static void logMethodEnterInfo(int hookId, MethodType methodType, String methodSign, Object instance, Object... args) {
-        int pid = XlogUtils.getProcessId();
-        int threadId = XlogUtils.getCurrentThreadId();
-
-        StringBuilder sb = new StringBuilder("{").append(String.format(KEY_TO_VALUE, "logType", LOG_TYPE_ENTER));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "time", XlogUtils.currentTime()));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "processName", XlogUtils.getProcessName()));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "threadName", XlogUtils.getCurrentThreadInfo()));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "pid", pid));
-        XlogUtils.appendInvokeLine(hookId, sb);
-        if (hookId > 0) {
-            sb.append(",").append(String.format(KEY_TO_VALUE, "hookId", hookId));
-        }
-        sb.append(",").append(String.format(KEY_TO_VALUE, "methodType", methodType.typename()));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "methodSign", methodSign));
-//判断是否是方法开始
-        if (methodType.hasInstance()) {
-            sb.append(",").append(String.format(KEY_TO_VALUE2, "instance", XlogUtils.object2String(instance)));
-        }
-        sb.append(",").append(XlogUtils.paramsToString(args));
         sb.append("}");
         LogWriter.d(hookId, pid, threadId, sb.toString());
     }

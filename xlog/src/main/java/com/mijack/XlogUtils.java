@@ -29,7 +29,8 @@ import static com.mijack.XlogBuilder.KEY_TO_VALUE2;
 public class XlogUtils {
 
     private static String processName;
-    private static final int INDEX_STACK_TRACE_ELEMENT = 4;
+    private static final int USER_METHOD_STACK_INDEX = 4;
+    private static final int SYSTEM_METHOD_STACK_INDEX = 6;
     public static final char LINE_SPLIT_CHAR = '\t';
 
     public static final char PARAMS_SPLIT_CHAR = '\t';
@@ -265,15 +266,17 @@ public class XlogUtils {
         StackTraceElement[] stackTrace = exception.getStackTrace();
         int lineNo = -1;
         String className = "null";
-        if (hookId < 0) {
-            if (stackTrace != null && stackTrace.length > INDEX_STACK_TRACE_ELEMENT) {
-                StackTraceElement stackTraceElement = stackTrace[INDEX_STACK_TRACE_ELEMENT];
-                lineNo = stackTraceElement.getLineNumber();
-                className = stackTraceElement.getClassName();
-            }
+        String methodName = "null";
+        int targetIndex = hookId < 0 ? USER_METHOD_STACK_INDEX : SYSTEM_METHOD_STACK_INDEX;
+        if (stackTrace != null && stackTrace.length > targetIndex) {
+            StackTraceElement stackTraceElement = stackTrace[targetIndex];
+            lineNo = stackTraceElement.getLineNumber();
+            className = stackTraceElement.getClassName();
+            methodName = stackTraceElement.getMethodName();
         }
-        sb.append(",").append(String.format(KEY_TO_VALUE, "lineNo", lineNo));
-        sb.append(",").append(String.format(KEY_TO_VALUE, "className", className));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "callerLineNo", lineNo));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "callerClassName", className));
+        sb.append(",").append(String.format(KEY_TO_VALUE, "callerMethodName", methodName));
 
     }
 }

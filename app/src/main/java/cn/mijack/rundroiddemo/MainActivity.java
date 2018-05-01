@@ -24,6 +24,9 @@ public class MainActivity extends Activity {
         editText2 = findViewById(R.id.editText2);
         btn = findViewById(R.id.btn);
         int randon = new Random().nextInt(10);
+        if (randon < 1000) {
+            btn.setOnClickListener(new NothingClickListener());
+        }
         if (randon < 100) {
             btn.setOnClickListener(new ViewClickListener(editText1, editText2));
         }com.mijack.Xlog.logMethodExit("void cn.mijack.rundroiddemo.MainActivity.onCreate(android.os.Bundle)",this);}catch(Throwable throwable){com.mijack.Xlog.logMethodExitWithThrowable("void cn.mijack.rundroiddemo.MainActivity.onCreate(android.os.Bundle)",this,throwable);throw throwable;}
