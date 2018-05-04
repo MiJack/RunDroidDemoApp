@@ -5,17 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.mijack.xposed.DebugAppListActivity">
+    tools:context="com.mijack.xposed.MethodListActivity">
 
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="查看系统hook的方法" />
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/method_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
