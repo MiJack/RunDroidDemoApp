@@ -73,7 +73,7 @@ public class MethodListActivity extends Activity implements AdapterView.OnItemLo
 
     private void showAddMethodDialog() {
         if (addView == null) {
-            addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_app, null);
+            addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_method, null);
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("添加方法名")
@@ -124,7 +124,7 @@ public class MethodListActivity extends Activity implements AdapterView.OnItemLo
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         // remove
         if (removeView == null) {
-            removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_app, null);
+            removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_method, null);
         }
         String methodName = methodNameAdapter.getItem(position);
         TextView textView = removeView.findViewById(R.id.textApp);
