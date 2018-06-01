@@ -30,5 +30,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     provided 'de.robv.android.xposed:api:82'
     provided 'de.robv.android.xposed:api:82:sources'
-    compile project(':xlog')
+    implementation project(':xlog')
 }
