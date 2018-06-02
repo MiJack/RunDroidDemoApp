@@ -10,8 +10,12 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
-
-
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11 -frtti -fexceptions -lz"
+                abiFilters 'armeabi', 'armeabi-v7a', 'mips', 'x86'
+            }
+        }
     }
 
     buildTypes {

@@ -1,13 +1,9 @@
 package com.mijack;
 
-import android.util.Log;
-
 import java.io.File;
-
-import me.pqpo.librarylog4a.Log4a;
-import me.pqpo.librarylog4a.appender.FileAppender;
-import me.pqpo.librarylog4a.formatter.Formatter;
-import me.pqpo.librarylog4a.logger.AppenderLogger;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * The log file writer
@@ -19,35 +15,71 @@ public class LogWriter {
 
     private static final String TAG = "XLog";
 
-    static {
-        Log.d("Demo", "test");
-        String processName = XlogUtils.getProcessName();
-        if (processName.contains(":")) {
-            processName = processName.substring(0, processName.indexOf(":"));
-        }
-        int processId = XlogUtils.getProcessId();
-        File log = new File("/data/data/" + processName + "/files/");
-        if (log.exists() || log.mkdirs()) {
-            File cacheFile = new File(log, processName + "_" + processId + ".logCache");
-            File logFile = new File(log, processName + "_" + processId + ".log");
-            cacheFile.delete();
-            logFile.delete();
-            FileAppender.Builder fileBuild = new FileAppender.Builder(null)
-                    .setLogFilePath(logFile.getAbsolutePath())
-                    .setBufferSize(BUFFER_SIZE)
-                    .setFormatter(new Formatter() {
-                        public String format(int logLevel, String tag, String msg) {
-                            return msg;
-                        }
-                    })
-                    .setBufferFilePath(cacheFile.getAbsolutePath());
-            fileBuild.create();
-            AppenderLogger logger = new AppenderLogger.Builder().create();
-            Log4a.setLogger(logger);
-        }
-    }
 
     public static synchronized void d(int hookId, int pid, int threadId, String msg) {
-        Log4a.d(TAG,msg);
+
+        Writer writer = checkFileWriter(hookId);
+        if (writer == null) {
+            return;
+        }
+        try {
+            writer.write(msg);
+            writer.write("\n");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
+
+    private static FileWriter checkFileWriter(int hookId) {
+        File logFile = obtainLogFile(hookId);
+        if (logFile == null || !logFile.exists()) {
+            return null;
+        }
+        try {
+            return new FileWriter(logFile, true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static File obtainLogFile(int hookId) {
+        int processId = XlogUtils.getProcessId();
+        String processName = XlogUtils.getProcessName();
+        String fileName = null;
+        if (hookId > 0) {
+            fileName = "/data/data/" + processName + "/files/"
+                    + processName + "_system_" + processId + ".log";
+        } else {
+            fileName = "/data/data/" + processName + "/files/"
+                    + processName + "_" + processId + ".log";
+        }
+        File file = new File(fileName);
+        if (!file.exists()) {
+            // check parent folder
+            if (!file.getParentFile().exists() && file.getParentFile().mkdirs()) {
+                return null;
+            }
+            try {
+                if (!file.createNewFile()) {
+                    return null;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
 }

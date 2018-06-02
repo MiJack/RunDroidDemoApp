@@ -40,6 +40,7 @@ public class XposedLoadPackageHook implements IXposedHookLoadPackage {
         Set<String> targetApps = prefs.getStringSet(TARGET_APPS, EMPTY_SET);
 
         if (!targetApps.contains(lpparam.packageName)) {
+            XposedBridge.log("不加载apk\n" + "包名: " + lpparam.packageName);
             // 不可加载应用
             return;
         }
