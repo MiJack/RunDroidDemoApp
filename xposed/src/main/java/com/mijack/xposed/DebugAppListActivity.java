@@ -29,8 +29,6 @@ import java.util.Set;
 public class DebugAppListActivity extends Activity implements AdapterView.OnItemLongClickListener, AdapterView.OnItemClickListener {
     ListView listView;
     StringDataAdapter appAdapter = new StringDataAdapter();
-    private View addView;
-    private View removeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +73,7 @@ public class DebugAppListActivity extends Activity implements AdapterView.OnItem
     }
 
     private void showAddAppDialog() {
-        if (addView == null) {
-            addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_app, null);
-        }
+        View addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_app, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("添加app")
                 .setView(addView)
@@ -123,9 +119,7 @@ public class DebugAppListActivity extends Activity implements AdapterView.OnItem
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         // remove
-        if (removeView == null) {
-            removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_app, null);
-        }
+        View removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_app, null);
         String app = appAdapter.getItem(position);
         TextView textView = removeView.findViewById(R.id.textApp);
         textView.setText(app);

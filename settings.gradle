@@ -1,1 +1,1 @@
-include ':app', ':xlog', ':xposed'
+include ':app', ':xlog', ':xposed', ':log4a'

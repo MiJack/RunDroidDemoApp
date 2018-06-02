@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -29,9 +30,16 @@ public class MethodListActivity extends Activity implements AdapterView.OnItemLo
     public static final String APP_NAME = "APP_NAME";
     ListView listView;
     StringDataAdapter methodNameAdapter = new StringDataAdapter();
-    private View addView;
-    private View removeView;
-
+    private String[] methodList = new String[]{
+            "android.app.Activity onCreate android.os.Bundle",
+            "android.app.Activity onStart",
+            "android.app.Activity onResume",
+            "android.app.Activity onPause",
+            "android.app.Activity onStop",
+            "android.app.Activity onDestroy",
+            "java.lang.Thread start",
+            "android.view.View setOnClickListener android.view.View$OnClickListener"
+    };
     private String appName;
 
     @Override
@@ -57,24 +65,40 @@ public class MethodListActivity extends Activity implements AdapterView.OnItemLo
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_method, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_add_app:
+            case R.id.menu_reset_methods:
+                showResetMethodsDialog();
+                return true;
+            case R.id.menu_add_method:
                 showAddMethodDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void showAddMethodDialog() {
-        if (addView == null) {
-            addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_method, null);
+    private void showResetMethodsDialog() {
+        StringBuffer sb = new StringBuffer();
+        for (String s : methodList) {
+            sb.append(s).append("\n");
         }
+        new AlertDialog.Builder(getContext()).setTitle("添加系统默认拦截方法")
+                .setMessage(sb.toString())
+                .setNegativeButton("添加", (dialog, which) -> {
+                    addMethodNames(Arrays.asList(methodList));
+                })
+                .setPositiveButton("取消", (dialog, which) -> {
+                }).create().show();
+
+    }
+
+    private void showAddMethodDialog() {
+        View addView = LayoutInflater.from(this).inflate(R.layout.dialog_add_method, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("添加方法名")
                 .setView(addView)
@@ -123,9 +147,7 @@ public class MethodListActivity extends Activity implements AdapterView.OnItemLo
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         // remove
-        if (removeView == null) {
-            removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_method, null);
-        }
+        View removeView = LayoutInflater.from(this).inflate(R.layout.dialog_remove_method, null);
         String methodName = methodNameAdapter.getItem(position);
         TextView textView = removeView.findViewById(R.id.textApp);
         textView.setText(methodName);
